@@ -1,0 +1,12 @@
+{
+	"authors": [
+		"ryhon"
+	],
+	"copyright": "Copyright © 2021, ryhon",
+	"dependencies": {
+		"dlq": "~>0.1.2"
+	},
+	"description": "Your personal robot butler over at ryhn.link",
+	"license": "proprietary",
+	"name": "rbot4"
+}

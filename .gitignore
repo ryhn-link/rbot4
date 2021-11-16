@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/rbot4
+rbot4.so
+rbot4.dylib
+rbot4.dll
+rbot4.a
+rbot4.lib
+rbot4-test-*
+*.exe
+*.o
+*.obj
+*.lst
