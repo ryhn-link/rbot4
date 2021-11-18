@@ -13,3 +13,4 @@ rbot4-test-*
 *.o
 *.obj
 *.lst
+config.ini
