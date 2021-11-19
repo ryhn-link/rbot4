@@ -1,12 +1,12 @@
 module commands.fun;
-import command;
+import botcommands;
 
 class FunCommands
 {
-	mixin RegisterCommands;
+	//mixin RegisterCommands;
 	static:
-
-	@CommandInfo("pp") 
+	
+	@Command("pp", "Get user's penis size")
 	void PP(CommandContext ctx)
 	{
 		

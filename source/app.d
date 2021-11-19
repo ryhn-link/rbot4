@@ -6,11 +6,13 @@ import std.format : format;
 import std.algorithm;
 import std.string;
 import std.range;
+import botcommands;
 
 MatrixClient mx;
 
 void main()
 {
+	writeln(registeredCommands.keys);
 	auto config = new IniFile("config.ini");
 
 	string homeserver = config["login"]["server"];
@@ -77,10 +79,10 @@ void handleCommand(MatrixTextMessage msg)
 	mx.sendString(msg.roomId, "%s executing command '%s' with args %s".format(msg.author,cmdname,args));
 
 	// Search for commands
-	import command;
-	if(cmdname in commands)
+	if(cmdname in registeredCommands)
 	{
-		Command cmd = commands[cmdname];
+		CommandInfo cmd = registeredCommands[cmdname];
+		cmd.overloads.front().execute(new CommandContext(), args);
 		// Check overloads
 	}
 	else mx.sendString(msg.roomId, "Command '%s' not found".format(cmdname));
