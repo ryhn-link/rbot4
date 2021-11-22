@@ -4,10 +4,14 @@
 	],
 	"copyright": "Copyright © 2021, ryhon",
 	"dependencies": {
-		"4x4d": "~>0.0.1",
+		"4x4d": "~>0.0.6",
+		"d2sqlite3": "~>1.0.0",
 		"dlq": "~>0.1.2",
 		"inilike": "~>1.2.1"
 	},
+	"versions": [
+		"SqliteEnableColumnMetadata"
+	],
 	"description": "Your personal robot butler over at ryhn.link",
 	"license": "proprietary",
 	"name": "rbot4"

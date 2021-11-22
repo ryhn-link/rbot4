@@ -1,4 +1,5 @@
 module botcommands;
+import rbot;
 
 mixin template RegisterCommands()
 {
@@ -38,18 +39,24 @@ mixin template RegisterCommands()
 						// Register the command if not found
 						CommandInfo cmd;
 						if (cmda.name in registeredCommands)
-							cmd = registeredCommands[cmda.name];
+							cmd = registeredCommands[cmda.name.toLower];
 						else
 						{
 							cmd = new CommandInfo();
 							cmd.name = cmda.name;
-							registeredCommands[cmd.name] = cmd;
+							registeredCommands[cmd.name.toLower] = cmd;
 						}
+
+						if(hasUDA!(OV, RequireOwner))
+							cmd.requireOwner = true;
 						
 						// Append any aliases
-						cmd.aliases ~= cmda.aliases;
+						cmd.aliases ~= cmda.aliases.select!(a => a.toLower, string);
 						if(cmda.aliases)
 							cmd.aliases = cmd.aliases.distinct;
+
+						if(!cmd.description)
+							cmd.description = cmda.description;
 
 						// Register overload
 						CommandOverload ovl = new CommandOverload();
@@ -57,8 +64,7 @@ mixin template RegisterCommands()
 						alias params = ParameterTypeTuple!OV;
 						alias defaults = ParameterDefaultValueTuple!OV;
 
-						pragma(msg, M);
-						mixin("bool execute"~M~"(CommandContext ctx, string[] args)
+						mixin("bool execute"~M~"(CommandContext ctx)
 						{
 							try
 							{
@@ -89,11 +95,16 @@ struct Command
 	string[] aliases;
 }
 
+// Require owner UDA
+struct RequireOwner
+{ }
+
 class CommandInfo
 {
-	string name;
+	string name, description;
 	string[] aliases;
 	CommandOverload[] overloads;
+	bool requireOwner;
 }
 
 class CommandOverload
@@ -103,12 +114,15 @@ class CommandOverload
 	void[] defaultValues;
 
 	
-	bool delegate(CommandContext, string[]) execute;
+	bool delegate(CommandContext) execute;
 }
 
 class CommandContext
 {
-
+	MatrixMessage message;
+	MatrixUser author;
+	string[] args;
+	string rawArgs;
 }
 
 T parseArgument(T)(CommandContext ctx, string s)

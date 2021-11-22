@@ -1,8 +1,13 @@
 {
 	"fileVersion": 1,
 	"versions": {
-		"4x4d": "0.0.1",
+		"4x4d": "0.0.6",
+		"d2sqlite3": "1.0.0",
 		"dlq": "0.1.2",
-		"inilike": "1.2.1"
+		"inilike": "1.2.1",
+		"mir-algorithm": "3.11.0",
+		"mir-core": "1.1.84",
+		"mir-linux-kernel": "1.2.1",
+		"mir-random": "2.2.19"
 	}
 }
