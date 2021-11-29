@@ -5,6 +5,7 @@ import dlq;
 import matrix;
 import matrixwrapper : WMatrixMessage = MatrixMessage;
 
+import std.conv;
 import std.array;
 import std.stdio;
 import std.format : format;
@@ -14,6 +15,7 @@ import std.functional;
 
 public import botcommands;
 public import matrixwrapper;
+public import html;
 
 class RBot
 {
@@ -105,7 +107,8 @@ class RBot
 		else
 		{
 			// Search using alias
-			cmd = registeredCommands.values.firstOrDefault!(v=>v.aliases.contains(cmdname.toLower));
+			cmd = registeredCommands.values.firstOrDefault!(
+				v => v.aliases.contains(cmdname.toLower));
 		}
 
 		if (!cmd)
@@ -166,4 +169,63 @@ string[] strexp(string s)
 		result ~= (str);
 	}
 	return result;
+}
+
+struct Color
+{
+	float r, g, b;
+
+	string toHex()
+	{
+		return "#" ~ (cast(ubyte)(r * 255)).to!string(16) ~ (cast(ubyte)(g * 255))
+			.to!string(16) ~ (cast(ubyte)(b * 255)).to!string(16);
+	}
+
+	static Color fromHue(float h)
+	{
+		Color c;
+
+		float rise()
+		{
+			return ((h % 60f) / 60f);
+		}
+
+		float lower()
+		{
+			return 1f - rise();
+		}
+
+		if (h > 300)
+		{
+			c.r = 1;
+			c.b = lower;
+		}
+		else if (h > 240)
+		{
+			c.b = 1;
+			c.r = rise;
+		}
+		else if (h > 180)
+		{
+			c.b = 1;
+			c.g = lower;
+		}
+		else if (h > 120)
+		{
+			c.g = 1;
+			c.b = rise;
+		}
+		else if (h > 60)
+		{
+			c.g = 1;
+			c.r = lower;
+		}
+		else
+		{
+			c.r = 1;
+			c.g = rise;
+		}
+
+		return c;
+	}
 }

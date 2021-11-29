@@ -3,6 +3,8 @@ module commands.dev;
 import botcommands;
 import database;
 import d2sqlite3;
+import html;
+import rbot : Color;
 
 class DevCommands
 {
@@ -20,6 +22,7 @@ static:
 		Statement statement = db.prepare(ctx.rawArgs);
 		ResultRange results = statement.execute();
 
+		import std.stdio;
 		if (results.empty)
 		{
 			ctx.message.reply("No result");
@@ -31,22 +34,30 @@ static:
 		for (int i = 0; i < row.length; i++)
 			columns ~= row.columnName(i);
 
-		string html = "<table>";
-		html ~= "<tr>";
-		foreach (h; columns)
-			html ~= "<th>" ~ h ~ "</th>";
-		html ~= "</tr>";
-
+		TableBuilder tb = new TableBuilder();
+		tb.addHeader(columns);
 		foreach (r; results)
 		{
-			html ~= "<tr>";
+			string[] cells;
 			for(int i=0; i<r.length; i++)
-			{
-				html ~= "<td>" ~ r[i].as!string ~ "</td>";
-			}
-			html ~= "</tr>";
+				cells ~= r[i].as!string;
+			tb.addRow(cells);
 		}
 
-		ctx.message.replyHtml(html,null);
+		ctx.message.replyHtml(tb.toString, null);
+	}
+
+	@Command("Tables", "List all SQL tables")
+	void tables(CommandContext ctx)
+	{
+		ctx.rawArgs = "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%'ORDER BY 1;";
+		SQL(ctx);
+	}
+
+	@Command("RainbowTest", "Tests html.rainbow()")
+	void rainbowTest(CommandContext ctx)
+	{
+		string msg = ctx.rawArgs;
+		ctx.message.replyHtml(rainbow(msg, 1, 360f / msg.length), msg);
 	}
 }
