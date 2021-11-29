@@ -14,3 +14,5 @@ rbot4-test-*
 *.obj
 *.lst
 config.ini
+.db
+.sql
