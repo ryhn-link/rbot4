@@ -130,7 +130,18 @@ class RBot
 		ctx.args = args;
 		ctx.rawArgs = content[cmdname.length .. $].strip();
 
-		cmd.overloads.front().execute(ctx);
+		try
+		{
+			cmd.overloads.front().execute(ctx);
+		}
+		catch (Exception e)
+		{
+			string rawstring = "An excetption has occured when executing %s:\n%s".format(cmdname, e.toString);
+			writeln(rawstring);
+			matrix.sendHTML(msg.roomId,
+				"An excetption has occured when executing <code>%s</code>:<br><code>%s</code>".format(cmdname, e.toString),
+				rawstring);
+		}
 		// Check overloads
 	}
 }

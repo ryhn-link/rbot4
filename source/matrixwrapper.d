@@ -7,9 +7,9 @@ class MatrixMessage
 {
 private:
 	MatrixClient c;
-	MatrixTextMessage msg;
 
 public:
+	MatrixTextMessage msg;
 	this(MatrixClient c, MatrixTextMessage msg)
 	{
 		this.c = c;

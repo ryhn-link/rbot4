@@ -1,8 +1,9 @@
 module commands.dev;
 
 import botcommands;
-import database;
 import d2sqlite3;
+import database;
+import std.conv;
 import html;
 import rbot : Color;
 
@@ -59,5 +60,17 @@ static:
 	{
 		string msg = ctx.rawArgs;
 		ctx.message.replyHtml(rainbow(msg, 1, 360f / msg.length), msg);
+	}
+
+	@Command("Exception", "Throw an exception", ["ex","throw"])
+	void throwEx(CommandContext ctx)
+	{
+		throw new Exception("Exception test");
+	}
+
+	@Command("ArgTest", "Tests arguments")
+	void argTest(CommandContext ctx, int number)
+	{
+		ctx.message.reply(number.to!string);
 	}
 }

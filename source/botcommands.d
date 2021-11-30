@@ -61,17 +61,30 @@ mixin template RegisterCommands()
 						// Register overload
 						CommandOverload ovl = new CommandOverload();
 						ovl.paramNames = [ParameterIdentifierTuple!OV];
-						alias params = ParameterTypeTuple!OV;
-						alias defaults = ParameterDefaultValueTuple!OV;
+						alias PARAMS = ParameterTypeTuple!OV;
+						alias DEFAULTS = ParameterDefaultValueTuple!OV;
 
 						mixin("bool execute"~M~"(CommandContext ctx)
 						{
-							try
-							{
-								OV(ctx);
-							}
-							catch (Exception e) {}
+							PARAMS params;
 
+							foreach (i, P; PARAMS)
+							{
+								// First arg MUST ALWAYS be a command context
+								static if(i == 0)
+								{
+									params[i] = ctx;
+								}
+								else
+								{
+									import std.conv;
+									pragma(msg, P);
+									static if(P.stringof  == \"string\")
+										params[i] = ctx.args[i-1];
+									else params[i] = ctx.args[i-1].to!(P);
+								}
+							}
+							OV(params);
 							return true;
 						}");
 						
