@@ -78,7 +78,6 @@ mixin template RegisterCommands()
 								else
 								{
 									import std.conv;
-									pragma(msg, P);
 									static if(P.stringof  == \"string\")
 										params[i] = ctx.args[i-1];
 									else params[i] = ctx.args[i-1].to!(P);
