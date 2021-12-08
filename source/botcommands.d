@@ -177,8 +177,10 @@ class CommandOverload
 
 class CommandContext
 {
+	import matrix;
 	MatrixMessage message;
 	MatrixUser author;
+	Matrix client;
 	string[] args;
 	string rawArgs;
 }

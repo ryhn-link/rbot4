@@ -64,4 +64,14 @@ public:
 	{
 		return userId;
 	}
+
+	import botcommands;
+	MatrixUser cmdParse(CommandContext ctx, string str)
+	{
+		import std.regex;
+		auto r = ctRegex(r"\@.*:.*\..*");
+		if(matchFirst(str, ctr).empty)
+			throw new Exception("User does not match the @user:domain.example format");
+		return new MatrixUser(ctx.client, str);
+	}
 }

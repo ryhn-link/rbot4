@@ -112,6 +112,7 @@ class RBot
 		CommandContext ctx = new CommandContext();
 		ctx.message = new WMatrixMessage(matrix, msg);
 		ctx.author = new MatrixUser(matrix, msg.sender);
+		ctx.client = matrix;
 
 		if (cmd.requireOwner && !ctx.author.isOwner)
 		{
