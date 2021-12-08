@@ -8,6 +8,20 @@ class HelpCommand
 {
 	mixin RegisterCommands;
 static:
+
+	@Command("help")
+	void Help(CommandContext ctx, string cmdname)
+	{
+		CommandInfo cmd = findCommand(cmdname);
+		if(cmd is null)
+		{
+			ctx.message.reply("Command not found");
+			return;
+		}
+
+		ctx.message.reply(cmd.name);
+	}
+
 	@Command("help", "Show help",["?","commands"])
 	void Help(CommandContext ctx)
 	{
@@ -42,16 +56,4 @@ static:
 
 		ctx.message.replyHtml(str, fallback);
 	}
-
-	/*
-	@Command("help")
-	void Help(CommandContext ctx, string cmdname)
-	{
-		if(!(cmdname in registeredCommands))
-		{
-			// Command not found
-			return;
-		}
-		CommandInfo cmd = registeredCommands[cmdname];
-*/
 }

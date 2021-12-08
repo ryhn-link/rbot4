@@ -47,49 +47,79 @@ mixin template RegisterCommands()
 							registeredCommands[cmd.name.toLower] = cmd;
 						}
 
-						if(hasUDA!(OV, RequireOwner))
+						if (hasUDA!(OV, RequireOwner))
 							cmd.requireOwner = true;
-						
+
 						// Append any aliases
 						cmd.aliases ~= cmda.aliases.select!(a => a.toLower, string);
-						if(cmda.aliases)
+						if (cmda.aliases)
 							cmd.aliases = cmd.aliases.distinct;
 
-						if(!cmd.description)
+						if (!cmd.description)
 							cmd.description = cmda.description;
 
 						// Register overload
 						CommandOverload ovl = new CommandOverload();
-						ovl.paramNames = [ParameterIdentifierTuple!OV];
 						alias PARAMS = ParameterTypeTuple!OV;
 						alias DEFAULTS = ParameterDefaultValueTuple!OV;
-
-						mixin("bool execute"~M~"(CommandContext ctx)
+						ovl.paramNames = [ParameterIdentifierTuple!OV];
+						static foreach (d; DEFAULTS)
 						{
-							PARAMS params;
+							static if (!is(d == void))
+							{
+								ovl.defaultValues ~= d.to!string;
+							}
+						}
+
+						bool execute(CommandContext ctx)
+						{
+							PARAMS params = void;
+							int paramc = PARAMS.length - 1;
+							int defaultc = cast(int) ovl.defaultValues.length;
+							int minparamsc = paramc - defaultc;
+							if (ctx.args.length < minparamsc)
+								throw new RBotCommandArgumentException(
+									"Not enough command parameters");
 
 							foreach (i, P; PARAMS)
 							{
 								// First arg MUST ALWAYS be a command context
-								static if(i == 0)
+								static if (i == 0)
 								{
 									params[i] = ctx;
 								}
 								else
 								{
-									import std.conv;
-									static if(P.stringof  == \"string\")
-										params[i] = ctx.args[i-1];
-									else params[i] = ctx.args[i-1].to!(P);
+									if (i < ctx.args.length - 1)
+									{
+										static if (!is(DEFAULTS[i] == void))
+											params[i] = (DEFAULTS[i]);
+									}
+									else
+									{
+										import std.conv;
+
+										try
+										{
+											static if (P.stringof == "string")
+												params[i] = ctx.args[i - 1];
+											else
+												params[i] = parseArgument!(P)(ctx, ctx.args[i - 1]);
+										}
+										catch(Exception e)
+										{
+											throw new RBotCommandArgumentException("Failed parsing argument '%s'".format(ovl.paramNames[i]));
+										}
+									}
 								}
 							}
 							OV(params);
 							return true;
-						}");
-						
+						}
 
 						import std.functional;
-						ovl.execute = (&(mixin("execute"~M))).toDelegate;
+
+						ovl.execute = (&(execute)).toDelegate;
 						cmd.overloads ~= ovl;
 					}
 				}
@@ -100,6 +130,22 @@ mixin template RegisterCommands()
 
 CommandInfo[string] registeredCommands;
 
+CommandInfo findCommand(string idOrAlias)
+{
+	import dlq;
+	import std.string;
+
+ 	idOrAlias = idOrAlias.toLower;
+	CommandInfo cmd = null;
+
+	if(idOrAlias in registeredCommands)
+		cmd = registeredCommands[idOrAlias];
+	else cmd = registeredCommands.values.firstOrDefault!(
+		v => v.aliases.contains(idOrAlias));
+
+	return cmd;
+}
+
 /// Command UDA
 struct Command
 {
@@ -109,7 +155,8 @@ struct Command
 
 // Require owner UDA
 struct RequireOwner
-{ }
+{
+}
 
 class CommandInfo
 {
@@ -123,9 +170,8 @@ class CommandOverload
 {
 	string[] paramNames;
 	string[] paramTypes;
-	void[] defaultValues;
+	string[] defaultValues;
 
-	
 	bool delegate(CommandContext) execute;
 }
 
@@ -139,13 +185,22 @@ class CommandContext
 
 T parseArgument(T)(CommandContext ctx, string s)
 {
-	static if("cmdParse" in __traits(allMembers, T))
+	static if (is(T == class) && "cmdParse" in __traits(allMembers, T))
 	{
 		T.cmdParse(ctx, s);
 	}
 	else
 	{
 		import std.conv;
+
 		return s.to!T;
+	}
+}
+
+class RBotCommandArgumentException : Exception
+{
+	public this(string s)
+	{
+		super(s);
 	}
 }

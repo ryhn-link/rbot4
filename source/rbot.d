@@ -101,15 +101,7 @@ class RBot
 		writeln("%s executing command '%s' with args %s".format(msg.sender, cmdname, args));
 
 		// Search for commands
-		CommandInfo cmd;
-		if (cmdname.toLower in registeredCommands)
-			cmd = registeredCommands[cmdname.toLower];
-		else
-		{
-			// Search using alias
-			cmd = registeredCommands.values.firstOrDefault!(
-				v => v.aliases.contains(cmdname.toLower));
-		}
+		CommandInfo cmd = findCommand(cmdname);
 
 		if (!cmd)
 		{
@@ -130,28 +122,31 @@ class RBot
 		ctx.args = args;
 		ctx.rawArgs = content[cmdname.length .. $].strip();
 
+		Exception[] exs;
 		foreach (ov; cmd.overloads)
 		{
-
 			try
 			{
 				ov.execute(ctx);
 				break;
 			}
 			catch (Exception e)
-			{
-				if(e.msg == "") continue;
+			{	
+				if(cast(RBotCommandArgumentException)e)
+				{
+					exs ~= e;
+					continue;
+				}
 
 				string rawstring = "An excetption has occured when executing %s:\n%s".format(cmdname, e
 						.toString);
 				writeln(rawstring);
 				matrix.sendHTML(msg.roomId,
-					"An excetption has occured when executing <code>%s</code>:<br><code>%s</code>".format(cmdname, e
-						.toString),
+					"An excetption has occured when executing <code>%s</code>:<br><code>%s</code>"
+						.format(cmdname, e.toString),
 					rawstring);
 			}
 		}
-		// Check overloads
 	}
 }
 
