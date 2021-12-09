@@ -3,7 +3,7 @@ module matrixwrapper;
 import matrix;
 import std.string;
 
-class MatrixMessage
+class RBotMessage
 {
 private:
 	MatrixClient c;
@@ -27,7 +27,7 @@ public:
 	}
 }
 
-class MatrixUser
+class RBotUser
 {
 private:
 	MatrixClient c;
@@ -66,12 +66,12 @@ public:
 	}
 
 	import botcommands;
-	MatrixUser cmdParse(CommandContext ctx, string str)
+	RBotUser cmdParse(CommandContext ctx, string str)
 	{
 		import std.regex;
-		auto r = ctRegex(r"\@.*:.*\..*");
-		if(matchFirst(str, ctr).empty)
+		auto r = ctRegex!(r"\@.*:.*\..*");
+		if(matchFirst(str, r).empty)
 			throw new Exception("User does not match the @user:domain.example format");
-		return new MatrixUser(ctx.client, str);
+		return new RBotUser(ctx.client, str);
 	}
 }

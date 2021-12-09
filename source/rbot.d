@@ -3,7 +3,6 @@ module rbot;
 import ini;
 import dlq;
 import matrix;
-import matrixwrapper : WMatrixMessage = MatrixMessage;
 
 import std.conv;
 import std.array;
@@ -110,8 +109,8 @@ class RBot
 		}
 
 		CommandContext ctx = new CommandContext();
-		ctx.message = new WMatrixMessage(matrix, msg);
-		ctx.author = new MatrixUser(matrix, msg.sender);
+		ctx.message = new RBotMessage(matrix, msg);
+		ctx.author = new RBotUser(matrix, msg.sender);
 		ctx.client = matrix;
 
 		if (cmd.requireOwner && !ctx.author.isOwner)

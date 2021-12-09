@@ -178,9 +178,9 @@ class CommandOverload
 class CommandContext
 {
 	import matrix;
-	MatrixMessage message;
-	MatrixUser author;
-	Matrix client;
+	RBotMessage message;
+	RBotUser author;
+	MatrixClient client;
 	string[] args;
 	string rawArgs;
 }
