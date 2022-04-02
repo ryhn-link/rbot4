@@ -2,7 +2,7 @@ module database;
 
 import d2sqlite3;
 
-Database db;
+__gshared Database db;
 
 static this()
 {

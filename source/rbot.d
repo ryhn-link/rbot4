@@ -18,7 +18,7 @@ public import html;
 
 class RBot
 {
-	static RBot current;
+	__gshared static RBot current;
 
 	MatrixClient matrix;
 	IniFile config;
@@ -75,7 +75,9 @@ class RBot
 	{
 		if (MatrixTextMessage txt = cast(MatrixTextMessage) e)
 		{
-			handleCommand(txt);
+			import std.parallelism;
+			auto t = task(&handleCommand, txt);
+			t.executeInNewThread();
 		}
 	}
 

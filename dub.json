@@ -5,14 +5,15 @@
 	"copyright": "Copyright © 2021, ryhon",
 	"dependencies": {
 		"4x4d": "~>0.0.8",
-		"d2sqlite3": "~>1.0.0",
+		"d2sqlite3": "~>1.0.0",	
 		"dlq": "~>0.1.2",
-		"inilike": "~>1.2.1"
+		"inilike": "~>1.2.1",
+		"jin-go": "~>2.0.1"
 	},
-	"versions": [
-		"SqliteEnableColumnMetadata"
-	],
 	"description": "Your personal robot butler over at ryhn.link",
 	"license": "proprietary",
-	"name": "rbot4"
+	"name": "rbot4",
+	"versions": [
+		"SqliteEnableColumnMetadata"
+	]
 }

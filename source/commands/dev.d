@@ -73,4 +73,14 @@ static:
 	{
 		ctx.message.reply(number.to!string);
 	}
+
+	@Command("Wait", "Wait", ["Sleep"])
+	void waitCmd(CommandContext ctx, int secs)
+	{	
+		import core.thread.osthread;
+		import core.time;
+		ctx.message.reply("zzz");
+		Thread.sleep( dur!("seconds")( secs ));
+		ctx.message.reply("hi");
+	}
 }
